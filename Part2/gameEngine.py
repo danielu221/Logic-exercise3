@@ -8,8 +8,6 @@ nick=globalVars.nick
 filePaths=globalVars.filePaths
 numberOfQuestions=5
 prize=1000000
-rules="""\n Przy kazdej odpowiedzi wpisz odpowiednia kwote.
-Pamietaj, ze pieniadze postawione na niepoprawne odpowiedzi zostana zniszczone."""
 ######################################
 
 ###### Logic  ########################
