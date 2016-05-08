@@ -7,3 +7,5 @@ Zawiera pliki zwiazane z częścią pierwszą zadania 3 z logiki matematycznej w
 ### PART2 ###
 
 Zawiera pliki związane z częścią drugą zadania 3 z logiki matematycznej w informatyce. Jest to gra logiczna "Polscy logicy", w której gracz odpowiada na pytania stawiając odpowiednią kwotę na każdą z odpowiedzi. Istnieje jedna poprawna odpowiedź, pieniądze postawione na niewłaściwe odpowiedzi trafiają do niszczarki.
+
+Wykonał Mateusz Danieluk
