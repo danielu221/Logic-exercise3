@@ -2,12 +2,13 @@ from random import shuffle
 import sys
 import time
 import globalVars
-
+import os
 ###### Initial conditions ############
-nick=globalVars.nick
 filePaths=globalVars.filePaths
 numberOfQuestions=5
 prize=1000000
+questions=list()
+highestScore=list()
 ######################################
 
 ###### Logic  ########################
@@ -16,7 +17,7 @@ orList=list()
 implList=list()
 notList=list()
 
-def getLogicFromFile():
+def getLogicFromFiles():
 	globalVars.getArguments()
 	with open(filePaths['--and'],'r') as f:
 		k=0
@@ -87,66 +88,66 @@ def answer(logicResult):
 	if logicResult=='x':
 		return 'C'
 
-getLogicFromFile() 
+def loadQuestions():
+	global questions
+	questions=[
+				("""Wloczega chodzi po parku i stwierdza, 
+	ze nie posiada papierosow. Poniewaz jest wloczega,
+	nie ma rowniez pieniedzy. 
+	Ale od czegoz jest glowa? Nasz wloczega zaczyna zbierac niedopalki.
+	Bibulke ma w kieszeni, a doswiadczenie go uczy, ze z siedmiu 
+	niedopalkow mozna zrobic jednego papierosa.
+	Po pewnym czasie uzbieral 49 niedopalkow.
+	Wloczega ma bardzo regularne przyzwyczajenia i 
+	pali jednego papierosa dokladnie co 3 kwadranse.
+	Na ile czasu wystarczy mu uzbierany zapas?\n""",'A)6h','B)5h 15min','C)1h 45min','A'), #last element is an answer
+				
+				("""Z burty statku zwiesza sie drabinka sznurowa w ten sposob, 
+	ze ledwie dosiega powierzchni wody. 
+	Szczeble drabinki rozmieszczone sa w odleglosci 25 centymetrow.
+	Ile szczebli znajdzie sie pod woda, gdy
+	podczas przyplywu morza woda podniesie sie o 90 centymetrow?\n""",'A)4','B)5','C)0','C'),
+				
+				("""Masz trzy torby: A, B, C. 
+	Na pierwszej masz napisane "JABLKA I POMARANCZE", 
+	na drugiej "JABLKA", a na trzeciej "POMARANCZE". 
+	Wszystkie etykiety sa niepoprawne. 
+	Twoim zadaniem jest poprawne rozmieszczenie etykiet na torbach. 
+	Mozesz jednak tylko raz siegnac do jednej z toreb i wyciagnac jeden owoc. 
+	Nie wolno zagladac do pozostalych toreb.
+	Siegasz do torby A i wyciagasz pomarancze.
+	\nJak powinny byc rozmieszczone pomarancze? \n""",'A) A-JABLKA I POMARANCZE, B-POMARANCZE, C-JABLKA',
+	'B)Nie da sie ustalic','C)A-POMARANCZE, B-JABLKA I POMARANCZE, C-JABLKA','C'),
 
-questions =[
-			("""Wloczega chodzi po parku i stwierdza, 
-ze nie posiada papierosow. Poniewaz jest wloczega,
-nie ma rowniez pieniedzy. 
-Ale od czegoz jest glowa? Nasz wloczega zaczyna zbierac niedopalki.
-Bibulke ma w kieszeni, a doswiadczenie go uczy, ze z siedmiu 
-niedopalkow mozna zrobic jednego papierosa.
-Po pewnym czasie uzbieral 49 niedopalkow.
-Wloczega ma bardzo regularne przyzwyczajenia i 
-pali jednego papierosa dokladnie co 3 kwadranse.
-Na ile czasu wystarczy mu uzbierany zapas?\n""",'A)6h','B)5h 15min','C)1h 45min','A'), #last element is an answer
-			
-			("""Z burty statku zwiesza sie drabinka sznurowa w ten sposob, 
-ze ledwie dosiega powierzchni wody. 
-Szczeble drabinki rozmieszczone sa w odleglosci 25 centymetrow.
-Ile szczebli znajdzie sie pod woda, gdy
-podczas przyplywu morza woda podniesie sie o 90 centymetrow?\n""",'A)4','B)5','C)0','C'),
-			
-			("""Masz trzy torby: A, B, C. 
-Na pierwszej masz napisane "JABLKA I POMARANCZE", 
-na drugiej "JABLKA", a na trzeciej "POMARANCZE". 
-Wszystkie etykiety sa niepoprawne. 
-Twoim zadaniem jest poprawne rozmieszczenie etykiet na torbach. 
-Mozesz jednak tylko raz siegnac do jednej z toreb i wyciagnac jeden owoc. 
-Nie wolno zagladac do pozostalych toreb.
-Siegasz do torby A i wyciagasz pomarancze.
-\nJak powinny byc rozmieszczone pomarancze? \n""",'A) A-JABLKA I POMARANCZE, B-POMARANCZE, C-JABLKA',
-'B)Nie da sie ustalic','C)A-POMARANCZE, B-JABLKA I POMARANCZE, C-JABLKA','C'),
+	 			("""x(stan nieokreslony)
+	\nJaka jest wartosc logiczna dla zdania:
+	~(1 & x) v (0 & x)?\n""",'A)1','B)0','C)X',answer (orResult(  notResult( andResult('1','x') ), andResult('0','x') ) ) ),
 
- 			("""x(stan nieokreslony)
-\nJaka jest wartosc logiczna dla zdania:
-~(1 & x) v (0 & x)?\n""",'A)1','B)0','C)X',answer (orResult(  notResult( andResult('1','x') ), andResult('0','x') ) ) ),
-
- 			("""x(stan nieokreslony)
-\nJaka jest wartosc logiczna dla zdania:
-~(1 v x) v (x & x)?\n""",'A)1','B)0','C)X',answer (orResult(  
- 																notResult( orResult('1','x') ), 
- 																andResult('x','x') ) ) 
-															),
-
- 			("""Jaka jest wartosc logiczna dla zdania:
-(0 v 1) => 1 ?\n""",'A)1','B)0','C)X',answer( implResult(orResult('0','1'), '1'  ) ) ),
-
- 			("""x(stan nieokreslony)
-\nJaka jest wartosc logiczna dla zdania:
-(x=>(1 v 0)) v (1 v x)  ?\n""",'A)1','B)0','C)X',answer(orResult( 
- 																    implResult( 'x',orResult('1','0') ),
- 																	orResult('1','x')))
+	 			("""x(stan nieokreslony)
+	\nJaka jest wartosc logiczna dla zdania:
+	~(1 v x) v (x & x)?\n""",'A)1','B)0','C)X',answer (orResult(  
+	 																notResult( orResult('1','x') ), 
+	 																andResult('x','x') ) ) 
 																),
 
- 			("""x(stan nieokreslony)
-\nJaka jest wartosc logiczna dla zdania:
-(x & (1 v x))  v  ((1=>x)&(1 v x))  ?\n""",'A)1','B)0','C)X',answer(orResult( 
- 																				andResult( 'x',orResult('1','x') ),
- 																				andResult(implResult('1','x'),orResult('1','x'))))
-																			)
-		
-]
+	 			("""Jaka jest wartosc logiczna dla zdania:
+	(0 v 1) => 1 ?\n""",'A)1','B)0','C)X',answer( implResult(orResult('0','1'), '1'  ) ) ),
+
+	 			("""x(stan nieokreslony)
+	\nJaka jest wartosc logiczna dla zdania:
+	(x=>(1 v 0)) v (1 v x)  ?\n""",'A)1','B)0','C)X',answer(orResult( 
+	 																    implResult( 'x',orResult('1','0') ),
+	 																	orResult('1','x')))
+																	),
+
+	 			("""x(stan nieokreslony)
+	\nJaka jest wartosc logiczna dla zdania:
+	(x & (1 v x))  v  ((1=>x)&(1 v x))  ?\n""",'A)1','B)0','C)X',answer(orResult( 
+	 																				andResult( 'x',orResult('1','x') ),
+	 																				andResult(implResult('1','x'),orResult('1','x'))))
+																				)
+			
+	]
 ######################################
 
 
@@ -172,11 +173,40 @@ def waitingText(lines,timeSleep):
 			time.sleep(timeSleep)
 			print '.....'
 
+def getHighestScore():
+	f=open("highestScore.txt","r") 
+	if os.stat("highestScore.txt").st_size!=0:
+		line=f.readline()
+		nick, highestScore=line.split(',')
+		highestScore=int(highestScore)
+		return highestScore
+	else:
+		return 0
+
+def setHighestScore(nick,score):
+	f=open("highestScore.txt","w")
+	f.truncate() 
+	line=nick+","+str(score)
+	f.write(line)
+	f.close
+	
+def printHighestScore():
+	if os.stat("highestScore.txt").st_size!=0:
+		f=open("highestScore.txt","r") 
+		line=f.readline()
+		nick, highestScore=line.split(',')
+		return nick+" - "+highestScore+" zl "
+	else:
+		return "Nie ustanowiono jeszcze rekordu."
+
+		
+
+
 def initGame():
+	loadQuestions()
 	shuffle(questions)
 	global prize
 	global numberOfQuestions
-	global nick
 	i=1
 	for question,ans1,ans2,ans3,goodAnswer in questions[:numberOfQuestions]:
 		globalVars.clearTerminal()
@@ -224,7 +254,10 @@ def initGame():
 			raw_input("\nNacisnij ENTER, aby przejsc dalej...")
 			i+=1
 		elif (prize>0 and i==numberOfQuestions):
-			print "\nBRAWO "+nick+", to bylo ostatnie pytanie. TWOJA WYGRANA TO: "+str(prize)+"zl!!!"
+			print "\nBRAWO "+globalVars.nick+", to bylo ostatnie pytanie. TWOJA WYGRANA TO: "+str(prize)+"zl!!!"
+			if prize>getHighestScore():
+				setHighestScore(globalVars.nick,prize)
+				print "USTANOWILES NOWY REKORD GRY!"
 		else:
 			print "Niestety, na twoim koncie nic juz nie ma. Przegrywasz."
 			break
